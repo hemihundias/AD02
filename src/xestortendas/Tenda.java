@@ -13,10 +13,10 @@ import java.util.List;
  * @author Hemihundias
  */
 public class Tenda {
-    private List<Empregado> empregados;
-    private List<Producto> productos;
     private final String Nome;
     private final String Cidade;
+    private List<Empregado> empregados;
+    private List<Producto> productos;
   
     public Tenda(String nome, String cidade) {
         this.Nome = nome;

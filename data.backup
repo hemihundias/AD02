@@ -1,1 +1,1 @@
-{  "tendas": [],  "clientes": []}
+{  "tendas": [    {      "empregados": [        {          "Nome": "fdg",          "Apelidos": "dfg fdgd"        }      ],      "productos": [        {          "Id": "001",          "Descripcion": "fdg",          "prezo": 1.0,          "cantidade": 1322        }      ],      "Nome": "elvira",      "Cidade": "sdfg"    }  ],  "clientes": [    {      "Nome": "fdg",      "Apelidos": "dfg dfgfd",      "mail": "dfg@mail.com"    }  ]}

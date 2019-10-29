@@ -1,4 +1,11 @@
+{
+  "tendas": [
     {
-  "tendas": [],
+      "Nome": "elvira",
+      "Cidade": "dsfg",
+      "empregados": [],
+      "productos": []
+    }
+  ],
   "clientes": []
 }

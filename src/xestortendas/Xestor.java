@@ -387,8 +387,9 @@ public class Xestor {
 
                 //Pasamos o json a clase ca cal se corresponde
                 Gson gson = new Gson();
-                Empresa empresa = gson.fromJson(json, Empresa.class);
-
+                empresa = gson.fromJson(json, Empresa.class);
+                
+                
             } catch (FileNotFoundException e) {
                 System.out.println("Non se encontra o arquivo");
             } catch (IOException e) {
