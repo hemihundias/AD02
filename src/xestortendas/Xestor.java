@@ -7,7 +7,6 @@ package xestortendas;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,32 +14,32 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-import static xestortendas.Xestor.tendas;
+
 
 /**
  *
  * @author Hemihundias
  */
 public class Xestor {
-    static List<Tenda> tendas = new ArrayList();
-    static List<Cliente> clientes = new ArrayList(); 
+    static Empresa empresa = new Empresa();
+    //static List<Tenda> tendas = new ArrayList();
+    //static List<Cliente> clientes = new ArrayList(); 
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
      */    
     public static void main(String[] args) throws IOException {
         boolean menu = true;
-                    
+                 
         String nome,cidade,id,descripcion,apelidos,mail;
         Double prezo;
-        int cantidade,i;
+        int cantidade,i,t;
         lerJson();        
         while(menu){      
             escribirJson();
@@ -68,9 +67,9 @@ public class Xestor {
                 case "1":
                     System.out.println("Engada nome da nova tenda:");
                     nome = teclado.nextLine();
-                    if(!tendas.isEmpty()){
-                        for(Tenda t:tendas){
-                            if(t.getNome().equalsIgnoreCase(nome)){
+                    if(!empresa.getTendas().isEmpty()){
+                        for(i=0;i<empresa.getTendas().size();i++){
+                            if(empresa.getTendas().get(i).getNome().equalsIgnoreCase(nome)){
                                 System.out.println("Ese nome xa está en uso, por favor elixa outro:");
                                 nome = teclado.nextLine();
                             }
@@ -78,27 +77,25 @@ public class Xestor {
                     }
                     System.out.println("Engada cidade de emprazamento da tenda:");
                     cidade = teclado.nextLine();
-                    tendas.add(new Tenda(nome,cidade));                  
+                    empresa.getTendas().add(new Tenda(nome,cidade));                  
                     break;
 
                 case "2":
-                    if(tendas.isEmpty()){
+                    if(empresa.getTendas().isEmpty()){
                         System.out.println("Non existen tendas para eliminar.\n");
                         break;
                     }
                     System.out.println("Por favor introduza a tenda a eliminar:");
                     nome = teclado.nextLine();
 
-                    Tenda tendaEliminada = null;
-                    for(Tenda t:tendas){
-                        if(t.getNome().equalsIgnoreCase(nome)){
-                            tendaEliminada = t;                            
+                    for(i=0;i<empresa.getTendas().size();i++){
+                        if(empresa.getTendas().get(i).getNome().equalsIgnoreCase(nome)){
+                            empresa.getTendas().remove(i);                            
                             eliminado = true;    
                             break;
                         }
                     } 
                     if(eliminado){
-                        tendas.remove(tendaEliminada);
                         System.out.println("Tenda eliminada correctamente.\n");
                         break;
                     }
@@ -107,19 +104,20 @@ public class Xestor {
                     break;
 
                 case "3":
-                    if(tendas.isEmpty()){
+                    if(empresa.getTendas().isEmpty()){
                         System.out.println("Non existen tendas as que engadir productos.\n");
                         break;
                     }
                     System.out.println("¿A que tenda quere engadir o producto?");
                     nome = teclado.nextLine();
-                    for(Tenda t:tendas){
-                        if(t.getNome().equalsIgnoreCase(nome)){  
+                    for(i=0;i<empresa.getTendas().size();i++){
+                        if(empresa.getTendas().get(i).getNome().equalsIgnoreCase(nome)){  
                             System.out.println("Engada identificador do novo producto:");
                             id = teclado.nextLine();
-                            if(!t.getProductos().isEmpty()){
-                                for(i=0;i<t.getProductos().size();i++){
-                                    if(t.getProductos().get(i).getId().equalsIgnoreCase(id)){
+                            t =i;
+                            if(!empresa.getTendas().get(t).getProductos().isEmpty()){
+                                for(i=0;i<empresa.getTendas().get(t).getProductos().size();i++){
+                                    if(empresa.getTendas().get(t).getProductos().get(i).getId().equalsIgnoreCase(id)){
                                         System.out.println("Ese identificador xa existe.\n");
                                         eliminado = true;
                                         break;
@@ -135,7 +133,7 @@ public class Xestor {
                             prezo = teclado.nextDouble();
                             System.out.println("Engada cantidade do producto:");
                             cantidade = teclado.nextInt();
-                            t.getProductos().add(new Producto(id,descripcion,prezo,cantidade)); 
+                            empresa.getTendas().get(i).getProductos().add(new Producto(id,descripcion,prezo,cantidade)); 
                             eliminado = true;
                         }
                     }
@@ -147,20 +145,21 @@ public class Xestor {
                     break;
 
                 case "4":
-                    if(tendas.isEmpty()){
+                    if(empresa.getTendas().isEmpty()){
                         System.out.println("Non existen tendas para a eliminación de productos.\n");
                         break;
                     }
                     System.out.println("Por favor introduza a tenda da que quere eliminar o producto:\n");
                     nome = teclado.nextLine();
                        
-                    for(Tenda t:tendas){
-                        if(t.getNome().equalsIgnoreCase(nome) && !t.getProductos().isEmpty()){
+                    for(i=0;i<empresa.getTendas().size();i++){
+                        if(empresa.getTendas().get(i).getNome().equalsIgnoreCase(nome) && !empresa.getTendas().get(i).getProductos().isEmpty()){
                             System.out.println("¿Que producto desexa eliminar? Indique o identificador.\n");
                             id = teclado.nextLine();
-                            for(i = 0;i<t.getProductos().size();i++){
-                                if(t.getProductos().get(i).getId().equalsIgnoreCase(id)){
-                                    t.getProductos().remove(i);
+                            t = i;
+                            for(i = 0;i<empresa.getTendas().get(t).getProductos().size();i++){
+                                if(empresa.getTendas().get(t).getProductos().get(i).getId().equalsIgnoreCase(id)){
+                                    empresa.getTendas().get(t).getProductos().remove(i);
                                     System.out.println("Producto eliminado correctamente.\n");
                                     eliminado = true;
                                     break;
@@ -177,30 +176,31 @@ public class Xestor {
                     break;
 
                 case "5":
-                    if(tendas.isEmpty()){
+                    if(empresa.getTendas().isEmpty()){
                         System.out.println("Non existen tendas ás que engadir empregados.\n");
                         break;
                     }
                     System.out.println("Por favor introduza a tenda na que se incluirá o novo empregado:\n");
                     nome = teclado.nextLine();
                                                             
-                    for(Tenda t:tendas){
-                        if(t.getNome().equalsIgnoreCase(nome)){
+                    for(i=0;i<empresa.getTendas().size();i++){
+                        if(empresa.getTendas().get(i).getNome().equalsIgnoreCase(nome)){
                             System.out.println("¿Cal é o nome do novo empregado?.\n");
                             nome = teclado.nextLine();
                             System.out.println("¿Cales son os apelidos do novo empregado?.\n");
                             apelidos = teclado.nextLine();
-                            if(!t.getEmpregados().isEmpty()){
-                                for(i = 0;i<t.getEmpregados().size();i++){
-                                    if(!t.getEmpregados().get(i).getNome().equalsIgnoreCase(nome) || !t.getEmpregados().get(i).getApelidos().equalsIgnoreCase(apelidos)){
-                                        t.getEmpregados().add(new Empregado(nome,apelidos));
+                            t = i;
+                            if(!empresa.getTendas().get(t).getEmpregados().isEmpty()){
+                                for(i = 0;i<empresa.getTendas().get(t).getEmpregados().size();i++){
+                                    if(!empresa.getTendas().get(t).getEmpregados().get(i).getNome().equalsIgnoreCase(nome) || !empresa.getTendas().get(t).getEmpregados().get(i).getApelidos().equalsIgnoreCase(apelidos)){
+                                        empresa.getTendas().get(t).getEmpregados().add(new Empregado(nome,apelidos));
                                         System.out.println("Empregado engadido correctamente.\n");
                                         eliminado = true;    
                                         break;
                                     }
                                 }
                             }else{
-                                t.getEmpregados().add(new Empregado(nome,apelidos));
+                                empresa.getTendas().get(t).getEmpregados().add(new Empregado(nome,apelidos));
                                 eliminado = true;    
                                 break;
                             }
@@ -215,22 +215,23 @@ public class Xestor {
                     break;
 
                 case "6":
-                    if(tendas.isEmpty()){
+                    if(empresa.getTendas().isEmpty()){
                         System.out.println("Non existen tendas para a eliminación de empregados.\n");
                         break;
                     }
                     System.out.println("Por favor introduza a tenda da que quere dar de baixa o empregado:\n");
                     nome = teclado.nextLine();
                        
-                    for(Tenda t:tendas){
-                        if(t.getNome().equalsIgnoreCase(nome) && !t.getEmpregados().isEmpty()){
+                    for(i=0;i<empresa.getTendas().size();i++){
+                        if(empresa.getTendas().get(i).getNome().equalsIgnoreCase(nome) && !empresa.getTendas().get(i).getEmpregados().isEmpty()){
                             System.out.println("¿Que empregado desexa dar de baixa? Indique o nome:");
                             nome = teclado.nextLine();
                             System.out.println("Agora os apelidos:");
                             apelidos = teclado.nextLine();
-                            for(i = 0;i<t.getEmpregados().size();i++){
-                                if(t.getEmpregados().get(i).getNome().equalsIgnoreCase(nome) && t.getEmpregados().get(i).getApelidos().equalsIgnoreCase(apelidos)){
-                                    t.getEmpregados().remove(i);
+                            t = i;
+                            for(i = 0;i<empresa.getTendas().get(t).getEmpregados().size();i++){
+                                if(empresa.getTendas().get(t).getEmpregados().get(i).getNome().equalsIgnoreCase(nome) && empresa.getTendas().get(t).getEmpregados().get(i).getApelidos().equalsIgnoreCase(apelidos)){
+                                    empresa.getTendas().get(t).getEmpregados().remove(i);
                                     System.out.println("Empregado dado de baixa correctamente.\n");
                                     eliminado = true;
                                     break;
@@ -253,8 +254,8 @@ public class Xestor {
                     apelidos = teclado.nextLine();
                     System.out.println("Engada correo electrónico do cliente:\n");
                     mail = teclado.nextLine();
-                    for(Cliente c:clientes){
-                        if(c.getMail().equalsIgnoreCase(mail)){
+                    for(i = 0;i<empresa.getClientes().size();i++){
+                        if(empresa.getClientes().get(i).getMail().equalsIgnoreCase(mail)){
                             System.out.println("O cliente xa existe.");
                             eliminado = true;
                         }
@@ -262,27 +263,23 @@ public class Xestor {
                     if(eliminado){
                         System.out.println("O cliente xa existe.\n");
                     }else{
-                        for(Tenda t:tendas){
-                            t.getClientes().add(new Cliente(nome,apelidos,mail));
-                        }
-                        
+                        empresa.getClientes().add(new Cliente(nome,apelidos,mail));
+                                                
                     }
 
                     break;
 
                 case "8":
-                    if(clientes.isEmpty()){
+                    if(empresa.getClientes().isEmpty()){
                         System.out.println("Non hai clientes para borrar.\n");
                         break;
                     }
                     System.out.println("Por favor introduza mail do cliente a eliminar:\n");
                     mail = teclado.nextLine();
 
-                    for(Cliente c:clientes){
-                        if(c.getMail().equalsIgnoreCase(mail)){
-                            for(Tenda t:tendas){
-                                t.getClientes().remove(t);
-                            }                            
+                    for(i = 0;i<empresa.getClientes().size();i++){
+                        if(empresa.getClientes().get(i).getMail().equalsIgnoreCase(mail)){
+                            empresa.getClientes().remove(i);                                                        
                             System.out.println("Cliente eliminado correctamente.\n");
                             eliminado = true;
                             break;
@@ -378,6 +375,7 @@ public class Xestor {
                 String linea;
 
                 while ((linea=buferEntrada.readLine()) != null) {
+                    System.out.println(linea);
                     jsonBuilder.append(linea).append("\n");
                 }
 
@@ -389,7 +387,7 @@ public class Xestor {
 
                 //Pasamos o json a clase ca cal se corresponde
                 Gson gson = new Gson();
-                Tenda[] t = gson.fromJson(json, Tenda[].class);
+                Empresa empresa = gson.fromJson(json, Empresa.class);
 
             } catch (FileNotFoundException e) {
                 System.out.println("Non se encontra o arquivo");
@@ -403,7 +401,7 @@ public class Xestor {
     public static void escribirJson(){
         //Pasamos a nosa clase a JSON utilizando a libreria GSON
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String json = gson.toJson(tendas);
+        String json = gson.toJson(empresa);
                 
         //Vamos comezar declarando o ficheiro
         File ficheiro = new File("data.json");

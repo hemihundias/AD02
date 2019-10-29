@@ -13,7 +13,6 @@ import java.util.List;
  * @author Hemihundias
  */
 public class Tenda {
-    private List<Cliente> clientes;
     private List<Empregado> empregados;
     private List<Producto> productos;
     private final String Nome;
@@ -23,8 +22,7 @@ public class Tenda {
         this.Nome = nome;
         this.Cidade = cidade;     
         this.empregados = new ArrayList();
-        this.productos = new ArrayList();
-        this.clientes = new ArrayList();
+        this.productos = new ArrayList();        
     }   
    
     public List<Empregado> getEmpregados() {
@@ -34,11 +32,7 @@ public class Tenda {
     public List<Producto> getProductos() {
         return productos;
     }    
-
-    public List<Cliente> getClientes() {
-        return clientes;
-    }
-        
+            
     public String getNome() {
         return Nome;
     }
